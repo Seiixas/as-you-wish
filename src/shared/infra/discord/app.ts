@@ -1,6 +1,7 @@
 import DiscordJS, { Intents } from 'discord.js';
 import { RestartServerUseCase } from '../../../modules/server/useCases/restart/RestartServerUseCase';
 import { StartServerUseCase } from '../../../modules/server/useCases/start/StartServerUseCase';
+import { GetStatusServerUseCase } from '../../../modules/server/useCases/status/GetStatusServerUseCase';
 import { StopServerUseCase } from '../../../modules/server/useCases/stop/StopServerUseCase';
 
 const app = new DiscordJS.Client({
@@ -25,10 +26,26 @@ app.on('messageCreate', async (message) => {
       content: '🕐 Starting server...'
     })
 
+    console.log(message.author.username);
+
     await startServerUseCase.execute();
 
     message.channel.send({
       content: '🚀 OpenRA Server is now running!'
+    })
+  }
+
+  if (message.content === 'ra#status') {
+    const getStatusServerUseCase = new GetStatusServerUseCase();
+
+    message.channel.send({
+      content: '🕐 Looking for actual status...'
+    })
+
+    const { stdout } = await getStatusServerUseCase.execute();
+
+    message.channel.send({
+      content: stdout
     })
   }
 
