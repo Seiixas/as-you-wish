@@ -1,4 +1,5 @@
 import { SSHExecCommandResponse } from "node-ssh";
+import { createLog } from "../../../../config/log";
 import { getSsh } from "../../../../config/ssh";
 
 class RestartServerUseCase {

@@ -1,8 +1,8 @@
 import DiscordJS, { Intents } from 'discord.js';
-import { RestartServerUseCase } from '../../../modules/server/useCases/restart/RestartServerUseCase';
-import { StartServerUseCase } from '../../../modules/server/useCases/start/StartServerUseCase';
-import { GetStatusServerUseCase } from '../../../modules/server/useCases/status/GetStatusServerUseCase';
-import { StopServerUseCase } from '../../../modules/server/useCases/stop/StopServerUseCase';
+import { restartServerController } from '../../../modules/server/useCases/restart';
+import { startServerController } from '../../../modules/server/useCases/start';
+import { getStatusServerController } from '../../../modules/server/useCases/status';
+import { stopServerController } from '../../../modules/server/useCases/stop';
 
 const app = new DiscordJS.Client({
   intents: [
@@ -12,71 +12,24 @@ const app = new DiscordJS.Client({
 });
 
 app.on('ready', () => {
-  console.log('OpenRA is now running!');
+  console.log('As You Wish BOT is now running!');
 });
 
 app.on('messageCreate', async (message) => {
   if (message.author.bot) return;
   if (message.channel.type === 'DM') return;
 
-  if (message.content === 'ra#start') {
-    const startServerUseCase = new StartServerUseCase();
+  if (message.content === 'ra#start') 
+    await startServerController.handle(message);
 
-    message.channel.send({
-      content: '🕐 Starting server...'
-    })
+  if (message.content === 'ra#status')
+    await getStatusServerController.handle(message);
 
-    console.log(message.author.username);
+  if (message.content === 'ra#stop') 
+    await stopServerController.handle(message);
 
-    await startServerUseCase.execute();
-
-    message.channel.send({
-      content: '🚀 OpenRA Server is now running!'
-    })
-  }
-
-  if (message.content === 'ra#status') {
-    const getStatusServerUseCase = new GetStatusServerUseCase();
-
-    message.channel.send({
-      content: '🕐 Looking for actual status...'
-    })
-
-    const { stdout } = await getStatusServerUseCase.execute();
-
-    message.channel.send({
-      content: stdout
-    })
-  }
-
-  if (message.content === 'ra#stop') {
-    const stopServerUseCase = new StopServerUseCase();
-
-    message.channel.send({
-      content: '🚦 Stopping server...'
-    })
-
-    await stopServerUseCase.execute();
-
-    message.channel.send({
-      content: '📉 OpenRA Server is down!'
-    })
-  }
-
-  if (message.content === 'ra#restart') {
-    const restartServerUseCase = new RestartServerUseCase();
-
-    message.channel.send({
-      content: '🔃 Restarting server...'
-    })
-
-    await restartServerUseCase.execute();
-
-    message.channel.send({
-      content: '🚀 OpenRA Server is now running!'
-    })
-  }
-
+  if (message.content === 'ra#restart')
+    await restartServerController.handle(message);
 });
 
 export { app };
