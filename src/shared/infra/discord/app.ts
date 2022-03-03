@@ -11,7 +11,14 @@ const app = new DiscordJS.Client({
   ]
 });
 
-app.on('ready', () => {
+app.on('ready', (client) => {
+  client.user.setPresence({
+    activities: [{
+      name: `A discórdia`,
+      type: `WATCHING` 
+    }] 
+  });
+
   console.log('As You Wish BOT is now running!');
 });
 
